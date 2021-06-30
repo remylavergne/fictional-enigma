@@ -78,7 +78,7 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 				newPath := strings.Replace(subpath, oldPath, newPath, 1)
 
 				if info.IsDir() {
-					err := os.Mkdir(newPath, 0755)
+					err := os.MkdirAll(newPath, 0755)
 					if err != nil {
 						panic(err)
 					}
