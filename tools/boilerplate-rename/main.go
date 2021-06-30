@@ -9,10 +9,11 @@ import (
 	"strings"
 )
 
+var steps int = 2 // TODO: From args (Default)
+
 func main() {
 	oldPackage := "co.touchlab.kampkit"   // TODO: From args
 	newPackage := "be.afelio.boilerplate" // TODO: From args
-	// up := 0 // TODO: From args
 
 	replacePackageOnFiles(getPackagePaths(), oldPackage, newPackage)
 	moveFilesToNewPackage(getPathsToRename(), strings.ReplaceAll(oldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
@@ -29,14 +30,14 @@ func up(step int) string {
 func replacePackageOnFiles(paths []string, oldPackage string, newPackage string) {
 
 	for _, path := range paths {
-		read, err := ioutil.ReadFile(up(2) + path)
+		read, err := ioutil.ReadFile(up(steps) + path)
 		if err != nil {
 			panic(err)
 		}
 
 		newContents := strings.Replace(string(read), oldPackage, newPackage, -1)
 
-		err = ioutil.WriteFile(up(2)+path, []byte(newContents), 0)
+		err = ioutil.WriteFile(up(steps)+path, []byte(newContents), 0)
 		if err != nil {
 			panic(err)
 		}
@@ -57,20 +58,20 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 
 	for _, path := range paths {
 		updatedPath := updatePath(path, oldPath, newPath)
-		err := os.MkdirAll(up(2)+updatedPath, 0755)
+		err := os.MkdirAll(up(steps)+updatedPath, 0755)
 
 		if err != nil {
 			panic(err)
 		}
 
-		errr := filepath.Walk(up(2)+path,
+		errr := filepath.Walk(up(steps)+path,
 			func(subpath string, info os.FileInfo, err error) error {
 				if err != nil {
 					return err
 				}
 
 				// Ignore top level path
-				if subpath == up(2)+path {
+				if subpath == up(steps)+path {
 					return nil
 				}
 
@@ -103,7 +104,7 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 			log.Println(err)
 		}
 	}
-
+	fmt.Println()
 	fmt.Println("-->", filesMoved, "files moved!")
 }
 
