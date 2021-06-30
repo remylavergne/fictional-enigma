@@ -15,7 +15,6 @@ func main() {
 
 	replacePackageOnFiles(getPackagePaths(), oldPackage, newPackage)
 	moveFilesToNewPackage(getPathsToRename(), oldPackage, newPackage)
-
 }
 
 func up(step int) string {
@@ -51,11 +50,18 @@ func updatePath(currentPath string, oldPackage string, newPackage string) string
 	return strings.Replace(currentPath, oldPackage, newPackage, 1)
 }
 
+// Method to recreate new package and move previous existing file into it
 func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string) {
+
+	op := strings.ReplaceAll(oldPackage, ".", "/")
+	np := strings.ReplaceAll(newPackage, ".", "/")
+
+	fmt.Println("Old package:", op, "New package:", np)
 
 	for _, path := range paths {
 		// Receive => app/src/main/java/co/touchlab/kampkit
-		updatedPath := updatePath(path, oldPackage, newPackage)
+		// fmt.Println("path:", path)
+		updatedPath := updatePath(path, op, np)
 		err := os.MkdirAll(up(2)+updatedPath, 0755)
 
 		if err != nil {
@@ -63,19 +69,19 @@ func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string)
 		}
 
 		errr := filepath.Walk(up(2)+path,
-			func(path string, info os.FileInfo, err error) error {
+			func(subpath string, info os.FileInfo, err error) error {
 				if err != nil {
 					return err
 				}
 
 				// Ignore top level path
-				if path == up(2)+path {
+				if subpath == up(2)+path {
 					return nil
 				}
 
 				// Change path
-				newPath := strings.Replace(path, oldPackage, newPackage, 1)
-				fmt.Println("New path =>", newPath)
+				newPath := strings.Replace(subpath, op, np, 1)
+				// fmt.Println("New path =>", newPath)
 
 				if info.IsDir() {
 					err := os.Mkdir(newPath, 0755)
@@ -83,7 +89,7 @@ func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string)
 						panic(err)
 					}
 				} else {
-					read, err := ioutil.ReadFile(path)
+					read, err := ioutil.ReadFile(subpath)
 					if err != nil {
 						panic(err)
 					}
@@ -92,6 +98,7 @@ func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string)
 					if err != nil {
 						panic(err)
 					}
+					fmt.Println("File", info.Name(), "moved to", newPath)
 				}
 
 				return nil
