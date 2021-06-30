@@ -10,11 +10,12 @@ import (
 )
 
 func main() {
-	oldPackage := "co.touchlab.kampkit"
-	newPackage := "be.afelio.boilerplate"
+	oldPackage := "co.touchlab.kampkit"   // TODO: From args
+	newPackage := "be.afelio.boilerplate" // TODO: From args
+	// up := 0 // TODO: From args
 
 	replacePackageOnFiles(getPackagePaths(), oldPackage, newPackage)
-	moveFilesToNewPackage(getPathsToRename(), oldPackage, newPackage)
+	moveFilesToNewPackage(getPathsToRename(), strings.ReplaceAll(oldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
 }
 
 func up(step int) string {
@@ -33,8 +34,6 @@ func replacePackageOnFiles(paths []string, oldPackage string, newPackage string)
 			panic(err)
 		}
 
-		// fmt.Println(path)
-
 		newContents := strings.Replace(string(read), oldPackage, newPackage, -1)
 
 		err = ioutil.WriteFile(up(2)+path, []byte(newContents), 0)
@@ -43,7 +42,8 @@ func replacePackageOnFiles(paths []string, oldPackage string, newPackage string)
 		}
 	}
 
-	fmt.Println("Done!")
+	fmt.Println("Old package", oldPackage, "replaced by", newPackage, "in", len(paths), "files")
+	fmt.Println("")
 }
 
 func updatePath(currentPath string, oldPackage string, newPackage string) string {
@@ -51,17 +51,12 @@ func updatePath(currentPath string, oldPackage string, newPackage string) string
 }
 
 // Method to recreate new package and move previous existing file into it
-func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string) {
+func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 
-	op := strings.ReplaceAll(oldPackage, ".", "/")
-	np := strings.ReplaceAll(newPackage, ".", "/")
-
-	fmt.Println("Old package:", op, "New package:", np)
+	filesMoved := 0
 
 	for _, path := range paths {
-		// Receive => app/src/main/java/co/touchlab/kampkit
-		// fmt.Println("path:", path)
-		updatedPath := updatePath(path, op, np)
+		updatedPath := updatePath(path, oldPath, newPath)
 		err := os.MkdirAll(up(2)+updatedPath, 0755)
 
 		if err != nil {
@@ -80,8 +75,7 @@ func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string)
 				}
 
 				// Change path
-				newPath := strings.Replace(subpath, op, np, 1)
-				// fmt.Println("New path =>", newPath)
+				newPath := strings.Replace(subpath, oldPath, newPath, 1)
 
 				if info.IsDir() {
 					err := os.Mkdir(newPath, 0755)
@@ -98,6 +92,8 @@ func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string)
 					if err != nil {
 						panic(err)
 					}
+
+					filesMoved += 1
 					fmt.Println("File", info.Name(), "moved to", newPath)
 				}
 
@@ -107,6 +103,8 @@ func moveFilesToNewPackage(paths []string, oldPackage string, newPackage string)
 			log.Println(err)
 		}
 	}
+
+	fmt.Println("-->", filesMoved, "files moved!")
 }
 
 func getPackagePaths() []string {
