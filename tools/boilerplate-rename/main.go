@@ -15,9 +15,9 @@ const OldPackage = "co.touchlab.kampkit"
 func main() {
 	newPackage := "be.afelio.boilerplate" // TODO: From args
 
-	replacePackageOnFiles(getPackagePaths(), OldPackage, newPackage)
+	replacePackageOnFiles(getFilesToUpdate(), OldPackage, newPackage)
 	moveFilesToNewPackage(getPackagesPaths(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
-	removeOldPackages(getPackagesPaths())
+	removeOldPackages(getPackagesPathsToDelete())
 }
 
 func up(step int) string {
@@ -118,9 +118,11 @@ func removeOldPackages(paths []string) {
 			panic(err)
 		}
 	}
+
+	log.Println("SUCCESS:", len(paths), "old packages deleted")
 }
 
-func getPackagePaths() []string {
+func getFilesToUpdate() []string {
 	return []string{
 		"app/build.gradle.kts",
 		"app/src/main/AndroidManifest.xml",
@@ -177,5 +179,18 @@ func getPackagesPaths() []string {
 		"shared/src/commonTest/kotlin/co/touchlab/kampkit",
 		"shared/src/iosMain/kotlin/co/touchlab/kampkit",
 		"shared/src/iosTest/kotlin/co/touchlab/kampkit",
+	}
+}
+
+func getPackagesPathsToDelete() []string {
+	return []string{
+		"app/src/main/java/co",
+		"shared/src/androidMain/kotlin/co",
+		"shared/src/androidTest/kotlin/co",
+		"shared/src/commonMain/kotlin/co",
+		"shared/src/commonMain/sqldelight/co",
+		"shared/src/commonTest/kotlin/co",
+		"shared/src/iosMain/kotlin/co",
+		"shared/src/iosTest/kotlin/co",
 	}
 }
