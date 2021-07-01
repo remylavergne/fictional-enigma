@@ -10,9 +10,8 @@ import (
 	"strings"
 )
 
-const OldPackage = "co.touchlab.kampkit"
-
 var steps int = 2
+var oldPackage string = "co.touchlab.kampkit"
 var newPackage string = "be.afelio.boilerplate"
 
 // Mandatory to work
@@ -23,8 +22,8 @@ func main() {
 	parseArgs()
 
 	if android {
-		replacePackageOnFiles(getFilesToUpdate(), OldPackage, newPackage)
-		moveFilesToNewPackage(getPackagesPaths(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
+		replacePackageOnFiles(getFilesToUpdate(), oldPackage, newPackage)
+		moveFilesToNewPackage(getPackagesPaths(), strings.ReplaceAll(oldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
 		removeOldPackages(getPackagesPathsToDelete())
 	}
 
@@ -43,7 +42,10 @@ func parseArgs() {
 		if arg == "--ios" {
 			ios = true
 		}
-		if arg == "-p" && i+1 < len(args) {
+		if arg == "-o" && i+1 < len(args) {
+			oldPackage = args[i+1]
+		}
+		if arg == "-n" && i+1 < len(args) {
 			newPackage = args[i+1]
 		}
 		if arg == "--step" && i+1 < len(args) {
