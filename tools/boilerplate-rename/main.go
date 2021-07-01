@@ -10,13 +10,13 @@ import (
 )
 
 var steps int = 2 // TODO: From args (Default)
+const OldPackage = "co.touchlab.kampkit"
 
 func main() {
-	oldPackage := "co.touchlab.kampkit"   // TODO: From args
 	newPackage := "be.afelio.boilerplate" // TODO: From args
 
-	replacePackageOnFiles(getPackagePaths(), oldPackage, newPackage)
-	moveFilesToNewPackage(getPathsToRename(), strings.ReplaceAll(oldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
+	replacePackageOnFiles(getPackagePaths(), OldPackage, newPackage)
+	moveFilesToNewPackage(getPathsToRename(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
 }
 
 func up(step int) string {
