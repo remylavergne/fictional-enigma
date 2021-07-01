@@ -16,7 +16,8 @@ func main() {
 	newPackage := "be.afelio.boilerplate" // TODO: From args
 
 	replacePackageOnFiles(getPackagePaths(), OldPackage, newPackage)
-	moveFilesToNewPackage(getPathsToRename(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
+	moveFilesToNewPackage(getPackagesPaths(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
+	removeOldPackages(getPackagesPaths())
 }
 
 func up(step int) string {
@@ -108,6 +109,17 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 	fmt.Println("-->", filesMoved, "files moved!")
 }
 
+func removeOldPackages(paths []string) {
+
+	for _, path := range paths {
+		err := os.RemoveAll(up(steps) + path)
+
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
 func getPackagePaths() []string {
 	return []string{
 		"app/build.gradle.kts",
@@ -155,7 +167,7 @@ func getPackagePaths() []string {
 	}
 }
 
-func getPathsToRename() []string {
+func getPackagesPaths() []string {
 	return []string{
 		"app/src/main/java/co/touchlab/kampkit",
 		"shared/src/androidMain/kotlin/co/touchlab/kampkit",
