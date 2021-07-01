@@ -36,7 +36,8 @@ func replacePackageOnFiles(paths []string, oldPackage string, newPackage string)
 	for _, path := range paths {
 		read, err := ioutil.ReadFile(up(steps) + path)
 		if err != nil {
-			panic(err)
+			log.Println(err)
+			return
 		}
 
 		newContents := strings.Replace(string(read), oldPackage, newPackage, -1)
