@@ -12,6 +12,9 @@ import (
 var steps int = 2 // TODO: From args (Default)
 const OldPackage = "co.touchlab.kampkit"
 
+var android bool = false
+var ios bool = false
+
 func main() {
 	newPackage := "be.afelio.boilerplate" // TODO: From args
 
@@ -54,6 +57,8 @@ func updatePath(currentPath string, oldPackage string, newPackage string) string
 
 // Method to recreate new package and move previous existing file into it
 func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
+	log.Println("Task: Create new package structure and move files")
+	log.Println()
 
 	filesMoved := 0
 
@@ -84,6 +89,7 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 					if err != nil {
 						panic(err)
 					}
+					log.Println("Directory", info.Name(), "created to", newPath)
 				} else {
 					read, err := ioutil.ReadFile(subpath)
 					if err != nil {
@@ -96,7 +102,7 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 					}
 
 					filesMoved += 1
-					fmt.Println("File", info.Name(), "moved to", newPath)
+					log.Println("File", info.Name(), "moved to", newPath)
 				}
 
 				return nil
@@ -105,12 +111,12 @@ func moveFilesToNewPackage(paths []string, oldPath string, newPath string) {
 			log.Println(err)
 		}
 	}
-	fmt.Println()
-	fmt.Println("-->", filesMoved, "files moved!")
+	log.Println()
+	log.Println("SUCCESS:", filesMoved, "files moved")
 }
 
 func removeOldPackages(paths []string) {
-
+	log.Println("Task: Remove old packages")
 	for _, path := range paths {
 		err := os.RemoveAll(up(steps) + path)
 
@@ -120,6 +126,7 @@ func removeOldPackages(paths []string) {
 	}
 
 	log.Println("SUCCESS:", len(paths), "old packages deleted")
+	log.Println()
 }
 
 func getFilesToUpdate() []string {
