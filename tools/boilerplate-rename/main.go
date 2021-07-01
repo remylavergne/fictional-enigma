@@ -6,21 +6,54 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
-var steps int = 2 // TODO: From args (Default)
 const OldPackage = "co.touchlab.kampkit"
 
+var steps int = 2
+var newPackage string = "be.afelio.boilerplate"
+
+// Mandatory to work
 var android bool = false
 var ios bool = false
 
 func main() {
-	newPackage := "be.afelio.boilerplate" // TODO: From args
+	parseArgs()
 
-	replacePackageOnFiles(getFilesToUpdate(), OldPackage, newPackage)
-	moveFilesToNewPackage(getPackagesPaths(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
-	removeOldPackages(getPackagesPathsToDelete())
+	if android {
+		replacePackageOnFiles(getFilesToUpdate(), OldPackage, newPackage)
+		moveFilesToNewPackage(getPackagesPaths(), strings.ReplaceAll(OldPackage, ".", "/"), strings.ReplaceAll(newPackage, ".", "/"))
+		removeOldPackages(getPackagesPathsToDelete())
+	}
+
+	if ios {
+		log.Println("iOS stuffs")
+	}
+}
+
+func parseArgs() {
+	args := os.Args[1:]
+
+	for i, arg := range args {
+		if arg == "--android" {
+			android = true
+		}
+		if arg == "--ios" {
+			ios = true
+		}
+		if arg == "-p" && i+1 < len(args) {
+			newPackage = args[i+1]
+		}
+		if arg == "--step" && i+1 < len(args) {
+			s, err := strconv.ParseInt(args[i+1], 10, 32)
+			if err != nil {
+				panic(err)
+			}
+			steps = int(s)
+		}
+	}
 }
 
 func up(step int) string {
